@@ -54,7 +54,7 @@ def copy_themis_data():
     sshpath = os.environ.get('THEMISSSH')
     cmd = f"rsync -avz {sshpath}/stlouis/data/TB3MS.csv data/TB3MS.csv"
     os.system(cmd)
-    cmd = f"rsync -avz {sshpath}/shiller/data/shiller.csv data/shiller.csv"
+    cmd = f"rsync -avz {sshpath}/shiller/data/shiller_out.csv data/shiller_out.csv"
     os.system(cmd)
     
 if __name__ == "__main__":
