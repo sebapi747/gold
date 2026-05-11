@@ -1,6 +1,7 @@
 import os, requests, re
 import pandas as pd
 import datetime as dt
+import time
 import matplotlib.pyplot as plt
 from dotenv import load_dotenv
 
@@ -15,6 +16,10 @@ def sendTelegram(text):
     resp.raise_for_status()
     
 def get_cmo_monthly():
+    fileout = "data/cmo-data-monthly.csv"
+    if os.path.exists(fileout) and time.time() - os.path.getmtime(fileout) < 14*86400:
+        print("INFO: File is less than 2 weeks old → skipping")
+        return
     response = requests.get("https://www.worldbank.org/en/research/commodity-markets", timeout=30)
     response.raise_for_status()
     match = re.search(r'href=([^ ]*?.xlsx)', response.text)
@@ -41,14 +46,21 @@ def get_cmo_monthly():
     df = df.rename(columns={'Unnamed: 0':'date'})
     # Convert directly with string manipulation
     df['date'] = pd.to_datetime(df['date'].str.replace('M', '-') + '-01') + pd.offsets.MonthEnd(0)
-    fileout = "cmo-data-monthly.csv"
     df.to_csv(fileout,index=False)
     print(f"output {len(df)} lines to {fileout}")
     sendTelegram(f"output {len(df)} lines to {fileout}")
 
+def copy_themis_data():
+    sshpath = os.environ.get('THEMISSSH')
+    cmd = f"rsync -avz {sshpath}/stlouis/data/TB3MS.csv data/TB3MS.csv"
+    os.system(cmd)
+    cmd = f"rsync -avz {sshpath}/shiller/data/shiller.csv data/shiller.csv"
+    os.system(cmd)
+    
 if __name__ == "__main__":
     load_dotenv()
     try:
        get_cmo_monthly()
+       copy_themis_data()
     except Exception as e:
        sendTelegram(str(e))
