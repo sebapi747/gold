@@ -1,4 +1,5 @@
 import pandas as pd
+import requests
 import datetime as dt
 import numpy as np
 import os
@@ -99,5 +100,5 @@ if __name__ == "__main__":
     compute_tbill_tr(df)
     show_returns(df.loc[df.index>=dt.datetime(1960,1,1)])
     cmd = f"rsync -avz {filename} {os.environ.get('REMOTEDIR')}/{filename}"
-    print(cmd)
     os.system(cmd)
+    sendTelegram(f"sent {filename} to refresh [SP500, Bond, Gold, Oil](https://www.markowitzoptimizer.pro/blog/114)")
