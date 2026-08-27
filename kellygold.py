@@ -30,8 +30,8 @@ def compute_gold_tr(df):
         df[colname+'TR'] = df[colname]/df[colname].shift(1)
     return df
 def goldprice():
-    col = {"CRUDE_DUBAI":"crude", "GOLD":"gold", "PLATINUM":"platinum","SILVER":"silver","COPPER":"copper","iNATGAS":"natgas"}
-    col = {"CRUDE_DUBAI":"crude (no roll)", "GOLD":"gold"}
+    col = {"Crude oil, Dubai":"crude", "Gold":"gold", "Platinum":"platinum","Silver":"silver","Copper":"copper","Natural gas index":"natgas"}
+    col = {"Crude oil, Dubai":"crude (no roll)", "Gold":"gold"}
     df = pd.read_csv("data/cmo-data-monthly.csv")[["date"]+list(col.keys())]
     df["date"] = pd.to_datetime(df["date"])+dt.timedelta(days=1)
     df = df.loc[df["date"]>=dt.datetime(1971,2,1)]

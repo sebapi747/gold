@@ -39,11 +39,11 @@ def get_cmo_monthly():
     print(cmd)
     os.system(cmd)
     
-    #df = pd.read_csv(csvout, skiprows=5, header=[0, 1], na_values=['…'])
-    #df.columns = df.columns.droplevel(1)
-    #df = df.rename(columns={'Unnamed: 0_level_0':'date'})
-    df = pd.read_csv(csvout, skiprows=6, na_values=['…'])
-    df = df.rename(columns={'Unnamed: 0':'date'})
+    df = pd.read_csv(csvout, skiprows=4, header=[0, 1], na_values=['…'])
+    df.columns = df.columns.droplevel(1)
+    df = df.rename(columns={'Unnamed: 0_level_0':'date'})
+    #df = pd.read_csv(csvout, skiprows=6, na_values=['…'])
+    #df = df.rename(columns={'Unnamed: 0':'date'})
     # Convert directly with string manipulation
     df['date'] = pd.to_datetime(df['date'].str.replace('M', '-') + '-01') + pd.offsets.MonthEnd(0)
     df.to_csv(fileout,index=False)
@@ -52,10 +52,11 @@ def get_cmo_monthly():
 
 def copy_themis_data():
     sshpath = os.environ.get('THEMISSSH')
-    cmd = f"rsync -avz {sshpath}/stlouis/data/TB3MS.csv data/TB3MS.csv"
-    os.system(cmd)
-    cmd = f"rsync -avz {sshpath}/shiller/data/shiller_out.csv data/shiller_out.csv"
-    os.system(cmd)
+    for cmd in [f"cp -p ../stlouis/data/TB3MS.csv data/TB3MS.csv",
+           f"cp -p ../shiller/data/shiller_out.csv data/shiller_out.csv",
+           f"cp -p ../shiller/data/shiller.csv data/shiller.csv"]:
+        print(cmd)
+        os.system(cmd)
     
 if __name__ == "__main__":
     load_dotenv()
